@@ -21,10 +21,21 @@ def ensure_output_dir():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
+# Subprocess budget for Node/Playwright scrapers (maps can exceed 60s on 8GB RAM).
+SCRAPER_SUBPROCESS_TIMEOUT_SEC = 1800
+
+
 def run_command(command, description):
     print(f'-- {description}')
     print(f'   command: {" ".join(command)}')
-    result = subprocess.run(command, cwd=ROOT_DIR)
+    # Inherit env so PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH / NODE options apply on Windows.
+    env = os.environ.copy()
+    result = subprocess.run(
+        command,
+        cwd=ROOT_DIR,
+        env=env,
+        timeout=SCRAPER_SUBPROCESS_TIMEOUT_SEC,
+    )
     if result.returncode != 0:
         raise RuntimeError(f'Command failed: {" ".join(command)}')
     print(f'   done: {description}')
@@ -140,6 +151,11 @@ def run_scrapers(city, keyword, limit):
     run_scraper_script('Bing', 'bing_scraper.js', BING_FILE, city, keyword, limit)
     run_scraper_script('YellowPages', 'yellowpages_scraper.js', YELLOWPAGES_FILE, city, keyword, limit)
     merge_businesses([MAPS_FILE, YELP_FILE, BING_FILE, YELLOWPAGES_FILE], BUSINESSES_FILE, f'{keyword} in {city}')
+    if os.path.exists(BUSINESSES_FILE) and not load_json(BUSINESSES_FILE):
+        print(
+            'WARNING: No businesses were merged. '
+            'From the project root run: npm install && npx playwright install chromium'
+        )
 
 
 def run_analyzer():
@@ -196,20 +212,63 @@ def main():
     parser.add_argument('--city', help='City to search for in the maps scraper')
     parser.add_argument('--keyword', help='Keyword to search for in the maps scraper')
     parser.add_argument('--limit', type=int, default=5, help='Maximum number of map results to scrape')
+    parser.add_argument(
+        '--phase',
+        choices=('all', 'scrape', 'analyze', 'osint', 'score'),
+        default='all',
+        help='Run a single phase (for autonomous step execution) or full pipeline.',
+    )
     args = parser.parse_args()
 
-    if args.city and args.keyword:
-        print(f'Starting HexaLeads pipeline for {args.keyword} in {args.city}')
-        run_scrapers(args.city, args.keyword, args.limit)
-    else:
-        if not os.path.exists(BUSINESSES_FILE):
-            raise ValueError('Either provide --city and --keyword, or ensure output/businesses.json already exists')
-        print('Skipping scraper because businesses.json already exists')
+    phase = args.phase
 
-    run_analyzer()
-    run_osint()
-    run_scoring()
+    if phase in ('all', 'scrape'):
+        if args.city and args.keyword:
+            print(f'Starting HexaLeads pipeline for {args.keyword} in {args.city}')
+            run_scrapers(args.city, args.keyword, args.limit)
+        else:
+            if not os.path.exists(BUSINESSES_FILE):
+                raise ValueError(
+                    'Either provide --city and --keyword, or ensure output/businesses.json already exists'
+                )
+            print('Skipping scraper because businesses.json already exists')
+        if phase == 'scrape':
+            print_summary_partial('scrape')
+            return
+
+    if phase in ('all', 'analyze'):
+        run_analyzer()
+        if phase == 'analyze':
+            print_summary_partial('analyze')
+            return
+
+    if phase in ('all', 'osint'):
+        run_osint()
+        if phase == 'osint':
+            print_summary_partial('osint')
+            return
+
+    if phase in ('all', 'score'):
+        run_scoring()
+        if phase == 'score':
+            print_summary_partial('score')
+            return
+
     print_summary()
+
+
+def print_summary_partial(name):
+    """Print a short line after a single-phase run."""
+    target = {
+        'scrape': BUSINESSES_FILE,
+        'analyze': ANALYZED_FILE,
+        'osint': OSINT_FILE,
+        'score': FINAL_FILE,
+    }.get(name)
+    if target and os.path.exists(target):
+        print(f'Phase {name} completed. Output: {target}')
+    else:
+        print(f'Phase {name} completed.')
 
 
 if __name__ == '__main__':

@@ -87,7 +87,7 @@ Reports now include:
 Md. Jony Hassain | HexaCyberLab
 
 - LinkedIn: https://www.linkedin.com/in/md-jony-hassain
-- GitHub: https://github.com/HexaCyberLab/HexaLeads
+- GitHub: https://github.com/jonyhossan110/HexaLeads
 - Website: https://hexacyberlab.com
 
 ---

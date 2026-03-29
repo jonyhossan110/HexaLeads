@@ -1,0 +1,14 @@
+{
+  "name": "hexaleads",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Node Playwright scrapers for HexaLeads (Google Maps, Yelp, Bing, YellowPages)",
+  "scripts": {
+    "install-browsers": "playwright install chromium"
+  },
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "playwright": "^1.49.0"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "country": "United Kingdom",
+  "city": "Manchester",
+  "category": "Real Estate Agencies",
+  "filters": {},
+  "mission_plan": {
+    "version": 1,
+    "intent": "hunt_leads",
+    "category": "Real Estate Agencies",
+    "city": "Manchester",
+    "country": "United Kingdom",
+    "command_raw": "/scrape \"United Kingdom\" \"Manchester\" \"Real Estate Agencies\"",
+    "steps": [
+      {
+        "id": 1,
+        "title": "Intent Analysis \u2014 validate category, city, and country.",
+        "emoji": "\ud83e\udde0"
+      },
+      {
+        "id": 2,
+        "title": "Scrape Maps \u2014 Google Maps & sources (visible browser).",
+        "emoji": "\ud83d\uddfa\ufe0f"
+      },
+      {
+        "id": 3,
+        "title": "Deep Web Search \u2014 analyzer + OSINT enrichment.",
+        "emoji": "\ud83c\udf10"
+      },
+      {
+        "id": 4,
+        "title": "AI Filter \u2014 scoring pipeline & lead ranking.",
+        "emoji": "\ud83e\udd16"
+      },
+      {
+        "id": 5,
+        "title": "Local Brain \u2014 spaCy quality gate + LeadAnalyzer.",
+        "emoji": "\ud83d\udd2c"
+      },
+      {
+        "id": 6,
+        "title": "Report Generation \u2014 Excel & PDF export.",
+        "emoji": "\ud83d\udcca"
+      }
+    ],
+    "created_at": "2026-03-29T10:18:13.091381+00:00",
+    "parse_meta": {
+      "confidence": 1.0,
+      "parse_method": "explicit_scrape"
+    }
+  },
+  "stage": "completed",
+  "progress": 100,
+  "message": "\u2705 Job completed successfully",
+  "started_at": "2026-03-29T10:18:14.260578Z",
+  "updated_at": "2026-03-29T10:18:15.782980Z",
+  "step_id": 6,
+  "kind": "info"
+}

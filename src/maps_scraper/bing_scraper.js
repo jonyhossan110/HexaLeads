@@ -102,7 +102,11 @@ async function main() {
   const outDir = path.dirname(outputFile);
   ensureDirectory(outDir);
 
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({
+    headless: false,
+    slowMo: 40,
+    args: ['--start-maximized', '--disable-blink-features=AutomationControlled'],
+  });
   const context = await browser.newContext({ userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' });
   const page = await context.newPage();
 

@@ -34,6 +34,15 @@ class MultiSearchScraper:
         self.session = requests.Session()
         self.session.headers.update(HEADERS)
 
+    def search_single_query(self, query: str) -> List[SearchResult]:
+        """Hybrid web results for one query (DuckDuckGo + Bing fallbacks)."""
+        primary = self.search_duckduckgo(query)
+        secondary: List[SearchResult] = []
+        if len(primary) < 5:
+            secondary = self.search_bing(query)
+        combined = self._merge_results(primary + secondary)
+        return combined
+
     def search(self, country: str, city: str, category: str) -> Dict[str, object]:
         query = f"{category} in {city} {country}".strip()
         primary = self.search_google(query)
