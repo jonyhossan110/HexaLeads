@@ -1,0 +1,32 @@
+HexaLeads Branding Guide
+========================
+
+Product: HexaLeads
+Agency: HexaCyberLab
+Creator: Md. Jony Hassain
+LinkedIn: https://www.linkedin.com/in/md-jony-hassain
+Tagline: AI-Powered Lead Discovery for Cybersecurity Professionals
+
+Usage License
+-------------
+HexaLeads is branded as a HexaCyberLab professional cybersecurity product. All distributions, demos, documentation, and presentations must retain the HexaCyberLab brand, creator name, and LinkedIn credit.
+
+Credit Requirements
+-------------------
+- Include the creator credit: Md. Jony Hassain | HexaCyberLab 🔒
+- Include the agency name: HexaCyberLab
+- Include the LinkedIn reference: linkedin.com/in/md-jony-hassain
+- Maintain the tool name: HexaLeads
+
+Branding Notes
+--------------
+- User interfaces, reports, and bot messages should carry HexaCyberLab identity.
+- Excel exports should contain metadata detailing creator, agency, LinkedIn, and generation date.
+- Startup and shutdown paths should reference HexaLeads by HexaCyberLab.
+
+Contact
+-------
+Md. Jony Hassain
+LinkedIn: https://www.linkedin.com/in/md-jony-hassain
+Website: https://hexacyberlab.com
+GitHub: https://github.com/HexaCyberLab/HexaLeads
