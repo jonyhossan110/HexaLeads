@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HexaLeads Control Center</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface-soft: #171725;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e9efff;
+      --muted: #8f94a2;
+      --cyan: #00d4ff;
+      --purple: #7b2fff;
+      --red: #ff3860;
+      --orange: #f2994a;
+      --green: #27ae60;
+      --yellow: #f2c94c;
+      --card-radius: 18px;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: radial-gradient(circle at top, rgba(0,212,255,0.14), transparent 40%), var(--bg); color: var(--text); }
+    body { padding: 0; }
+    a { color: var(--cyan); text-decoration: none; }
+    a:hover { color: var(--purple); }
+    .page { max-width: 1360px; margin: 0 auto; padding: 24px; }
+    .topbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 24px; }
+    .brand { display: flex; align-items: baseline; gap: 10px; }
+    .brand h1 { margin: 0; font-size: 1.6rem; letter-spacing: 0.05em; }
+    .brand small { color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; }
+    .nav { display: flex; flex-wrap: wrap; gap: 10px; }
+    .nav a { display: inline-flex; align-items: center; padding: 10px 16px; border-radius: 999px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); font-size: 0.95rem; }
+    .nav a.active, .nav a:hover { background: rgba(0,212,255,.14); border-color: rgba(0,212,255,.25); }
+
+    .grid { display: grid; gap: 20px; }
+    .grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--card-radius); box-shadow: var(--shadow); padding: 22px; }
+    .card h2 { margin: 0 0 14px; font-size: 1.05rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+    .card p { margin: 0; }
+    .stat { font-size: 2.8rem; font-family: "SF Mono", "Fira Code", monospace; letter-spacing: -0.04em; }
+    .small { color: var(--muted); }
+    .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); background: #13131d; color: var(--text); cursor: pointer; transition: transform .15s ease, background .15s ease; }
+    .button:hover { transform: translateY(-1px); background: rgba(255,255,255,.08); }
+    .button-blue { background: #0f4dff; }
+    .button-purple { background: var(--purple); }
+    .button-cyan { background: var(--cyan); color: #040714; }
+    .button-danger { background: var(--red); }
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+    .badge-high { background: rgba(255, 56, 96, 0.15); color: #ff7f99; }
+    .badge-medium { background: rgba(242, 153, 74, 0.18); color: #ffb777; }
+    .badge-low { background: rgba(143, 148, 162, 0.18); color: #d8dbe8; }
+    .badge-new { background: rgba(47, 128, 237, 0.16); color: #7db9ff; }
+    .badge-contacted { background: rgba(242, 201, 76, 0.18); color: #fae08d; }
+    .badge-replied { background: rgba(39, 174, 96, 0.18); color: #7be7a2; }
+    .badge-converted { background: rgba(155, 81, 224, 0.18); color: #c89dff; }
+    .badge-rejected { background: rgba(255, 56, 96, 0.18); color: #ff9cb3; }
+    .badge-unknown { background: rgba(255,255,255,0.08); color: var(--muted); }
+    table { width: 100%; border-collapse: collapse; border-spacing: 0; background: transparent; }
+    th, td { padding: 14px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    th { color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.09em; }
+    td { font-family: "SF Mono", "Fira Code", monospace; font-size: 0.92rem; }
+    tr:hover { background: rgba(255,255,255,0.04); }
+    input, select, textarea { width: 100%; border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; background: #0f1220; color: var(--text); padding: 12px 14px; outline: none; }
+    label { display: block; margin-bottom: 8px; color: var(--muted); font-size: 0.9rem; }
+    form > * + * { margin-top: 16px; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+    .stack { display: flex; flex-direction: column; gap: 16px; }
+    .text-muted { color: var(--muted); }
+    .section-title { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 18px; }
+    .section-title h2 { margin: 0; font-size: 1.2rem; }
+    .table-wrap { overflow-x: auto; }
+    .action-buttons { display: inline-flex; flex-wrap: wrap; gap: 8px; }
+    .small-note { color: var(--muted); font-size: 0.85rem; }
+    pre { background: #090a10; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 16px; overflow-x: auto; }
+    @media (max-width: 960px) {
+      .grid-cols-4, .grid-cols-3, .grid-cols-2 { grid-template-columns: 1fr; }
+      .topbar { flex-direction: column; align-items: stretch; }
+      .nav { justify-content: flex-start; }
+      table, th, td { font-size: 0.82rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <h1>HexaLeads</h1>
+        <small>Control Center</small>
+      </div>
+      <nav class="nav">
+        <a href="{{ url_for('home') }}" class="{% if page == 'home' %}active{% endif %}">Dashboard</a>
+        <a href="{{ url_for('leads') }}" class="{% if page == 'leads' %}active{% endif %}">Leads</a>
+        <a href="{{ url_for('scan_page') }}" class="{% if page == 'scan' %}active{% endif %}">Scan</a>
+        <a href="{{ url_for('upwork') }}" class="{% if page == 'upwork' %}active{% endif %}">Upwork</a>
+      </nav>
+    </header>
+
+    {% if page == 'home' %}
+    <section class="grid grid-cols-4" style="margin-bottom: 24px;">
+      <div class="card"><h2>Total Leads</h2><p class="stat">{{ stats.total_leads }}</p></div>
+      <div class="card"><h2>High Priority</h2><p class="stat">{{ stats.high_priority }}</p></div>
+      <div class="card"><h2>Emails Sent</h2><p class="stat">{{ stats.emails_sent }}</p></div>
+      <div class="card"><h2>Replies Received</h2><p class="stat">{{ stats.replies_received }}</p></div>
+    </section>
+
+    <section class="section-title">
+      <h2>Recent Leads</h2>
+      <div class="toolbar">
+        <a href="{{ url_for('leads') }}" class="button button-cyan">View All Leads</a>
+        <a href="{{ url_for('scan_page') }}" class="button button-purple">Run Manual Scan</a>
+        <a href="{{ url_for('upwork') }}" class="button button-blue">View Upwork Jobs</a>
+      </div>
+    </section>
+    <div class="card table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th><th>Website</th><th>Email</th><th>Score</th><th>Status</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for lead in recent_leads %}
+          <tr>
+            <td>{{ lead.business_name or '-' }}</td>
+            <td><a href="{{ lead.website }}" target="_blank">{{ lead.website }}</a></td>
+            <td>{{ lead.email or '-' }}</td>
+            <td><span class="badge badge-{{ (lead.score_label or 'low').lower() }}">{{ lead.score_label or 'LOW' }}</span></td>
+            <td><span class="badge badge-{{ lead.status|lower if lead.status else 'new' }}">{{ lead.status or 'new' }}</span></td>
+            <td class="action-buttons">
+              <a href="{{ url_for('lead_detail', lead_id=lead.id) }}" class="button">Details</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    {% if page == 'leads' %}
+    <section class="section-title">
+      <h2>All Leads</h2>
+      <div class="toolbar">
+        <a href="{{ url_for('home') }}" class="button">Dashboard</a>
+        <a href="{{ url_for('scan_page') }}" class="button button-purple">Manual Scan</a>
+      </div>
+    </section>
+    <div class="grid grid-cols-3" style="margin-bottom: 22px;">
+      <div class="card">
+        <label>Status</label>
+        <select onchange="applyFilters()" id="filter-status">
+          <option value="">All</option>
+          {% for value in options.statuses %}
+          <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ value }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="card">
+        <label>Score Label</label>
+        <select onchange="applyFilters()" id="filter-score_label">
+          <option value="">All</option>
+          {% for value in options.score_labels %}
+          <option value="{{ value }}" {% if filters.score_label == value %}selected{% endif %}>{{ value }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="card">
+        <label>Country</label>
+        <select onchange="applyFilters()" id="filter-country">
+          <option value="">All</option>
+          {% for value in options.countries %}
+          <option value="{{ value }}" {% if filters.country == value %}selected{% endif %}>{{ value }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="card">
+        <label>Source</label>
+        <select onchange="applyFilters()" id="filter-source">
+          <option value="">All</option>
+          {% for value in options.sources %}
+          <option value="{{ value }}" {% if filters.source == value %}selected{% endif %}>{{ value }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="card">
+        <label>Sort by</label>
+        <select onchange="applyFilters()" id="filter-sort">
+          <option value="">Default</option>
+          <option value="score" {% if sort_key == 'score' %}selected{% endif %}>Score</option>
+          <option value="created_at" {% if sort_key == 'created_at' %}selected{% endif %}>Created At</option>
+        </select>
+      </div>
+    </div>
+    <div class="card table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th><th>Website</th><th>Email</th><th>Score</th><th>Status</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for lead in leads %}
+          <tr>
+            <td>{{ lead.business_name or '-' }}</td>
+            <td><a href="{{ lead.website }}" target="_blank">{{ lead.website }}</a></td>
+            <td>{{ lead.email or '-' }}</td>
+            <td><span class="badge badge-{{ (lead.score_label or 'low').lower() }}">{{ lead.score_label or 'LOW' }}</span></td>
+            <td><span class="badge badge-{{ lead.status|lower if lead.status else 'new' }}">{{ lead.status or 'new' }}</span></td>
+            <td class="action-buttons">
+              <a href="{{ url_for('lead_detail', lead_id=lead.id) }}" class="button">Details</a>
+              <button class="button button-cyan" onclick="approveLead({{ lead.id }})">Approve</button>
+              <button class="button button-danger" onclick="rejectLead({{ lead.id }})">Reject</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    {% if page == 'detail' %}
+    <section class="section-title">
+      <h2>Lead Details</h2>
+      <div class="toolbar">
+        <a href="{{ url_for('leads') }}" class="button">Back to Leads</a>
+        <button class="button button-cyan" onclick="approveLead({{ lead.id }})">Send Email</button>
+        <button class="button button-danger" onclick="rejectLead({{ lead.id }})">Reject</button>
+      </div>
+    </section>
+    <div class="grid grid-cols-2" style="margin-bottom: 22px;">
+      <div class="card">
+        <h2>Business Information</h2>
+        <p><strong>Name:</strong> {{ lead.business_name or '-' }}</p>
+        <p><strong>Website:</strong> <a href="{{ lead.website }}" target="_blank">{{ lead.website }}</a></p>
+        <p><strong>Email:</strong> {{ lead.email or '-' }}</p>
+        <p><strong>Phone:</strong> {{ lead.phone or '-' }}</p>
+        <p><strong>Country:</strong> {{ lead.country or '-' }}</p>
+        <p><strong>Industry:</strong> {{ lead.industry or '-' }}</p>
+        <p><strong>Source:</strong> {{ lead.source or '-' }}</p>
+        <p><strong>Status:</strong> <span class="badge badge-{{ lead.status|lower if lead.status else 'new' }}">{{ lead.status or 'new' }}</span></p>
+      </div>
+      <div class="card">
+        <h2>Pitch Preview</h2>
+        <p class="small-note">Latest generated outreach content.</p>
+        <pre>{{ pitch_preview }}</pre>
+      </div>
+    </div>
+    <div class="grid grid-cols-2" style="margin-bottom: 22px;">
+      <div class="card">
+        <h2>Security Issues ({{ security.count }})</h2>
+        {% if security.issues %}
+        <ul>
+          {% for issue in security.issues %}
+          <li><strong>{{ issue.issue_type or issue.type }}</strong> — {{ issue.detail or issue.details }}</li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted">No security issues recorded.</p>
+        {% endif %}
+      </div>
+      <div class="card">
+        <h2>Email History</h2>
+        {% if outreach_history %}
+        <table>
+          <thead>
+            <tr><th>Status</th><th>Sent At</th><th>Subject</th></tr>
+          </thead>
+          <tbody>
+            {% for outreach in outreach_history %}
+            <tr>
+              <td>{{ outreach.status }}</td>
+              <td>{{ outreach.sent_at or outreach.created_at or '-' }}</td>
+              <td>{{ outreach.email_subject or '-' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted">No outreach history available yet.</p>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% if page == 'scan' %}
+    <section class="section-title">
+      <h2>Manual Scan</h2>
+      <div class="toolbar">
+        <a href="{{ url_for('home') }}" class="button">Dashboard</a>
+        <a href="{{ url_for('leads') }}" class="button">Leads</a>
+      </div>
+    </section>
+    <div class="card" style="margin-bottom: 22px;">
+      <form id="scan-form" onsubmit="return runScan();">
+        <label for="scan-url">Website or domain</label>
+        <input type="text" id="scan-url" placeholder="https://example.com" required />
+        <button type="submit" class="button button-cyan">Run Scan</button>
+      </form>
+    </div>
+    <div class="card" id="scan-result" style="display: none;"></div>
+    {% endif %}
+
+    {% if page == 'upwork' %}
+    <section class="section-title">
+      <h2>Upwork Jobs</h2>
+      <div class="toolbar">
+        <a href="{{ url_for('home') }}" class="button">Dashboard</a>
+        <a href="{{ url_for('leads') }}" class="button">Leads</a>
+      </div>
+    </section>
+    <div class="card table-wrap">
+      <table>
+        <thead>
+          <tr><th>Title</th><th>Budget</th><th>Country</th><th>Status</th><th>Found At</th></tr>
+        </thead>
+        <tbody>
+          {% for job in jobs %}
+          <tr>
+            <td><a href="{{ job.job_url }}" target="_blank">{{ job.job_title or '-' }}</a></td>
+            <td>{{ job.budget or '-' }}</td>
+            <td>{{ job.client_country or '-' }}</td>
+            <td>{{ job.status or '-' }}</td>
+            <td>{{ job.found_at or '-' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    {% if page == 'not_found' %}
+    <div class="card">
+      <h2>Not Found</h2>
+      <p>{{ message }}</p>
+      <a href="{{ url_for('home') }}" class="button">Back to Dashboard</a>
+    </div>
+    {% endif %}
+  </main>
+
+  <script>
+    const apiApprove = url => fetch(url, { method: 'POST' }).then(r => r.json());
+
+    async function approveLead(id) {
+      const response = await apiApprove(`/api/approve/${id}`);
+      alert(response.status ? `Lead ${id} approved and email sent.` : response.error || 'Unable to approve.');
+      if (response.status) location.reload();
+    }
+
+    async function rejectLead(id) {
+      const response = await apiApprove(`/api/reject/${id}`);
+      alert(response.status ? `Lead ${id} rejected.` : response.error || 'Unable to reject.');
+      if (response.status) location.reload();
+    }
+
+    function applyFilters() {
+      const status = document.getElementById('filter-status')?.value || '';
+      const score_label = document.getElementById('filter-score_label')?.value || '';
+      const country = document.getElementById('filter-country')?.value || '';
+      const source = document.getElementById('filter-source')?.value || '';
+      const sort = document.getElementById('filter-sort')?.value || '';
+      const params = new URLSearchParams();
+      if (status) params.set('status', status);
+      if (score_label) params.set('score_label', score_label);
+      if (country) params.set('country', country);
+      if (source) params.set('source', source);
+      if (sort) params.set('sort', sort);
+      window.location = `${window.location.pathname}?${params.toString()}`;
+    }
+
+    {% if page == 'home' %}
+    async function refreshStats() {
+      try {
+        const response = await fetch('/api/stats');
+        const data = await response.json();
+        document.querySelector('.card:nth-child(1) .stat').textContent = data.total_leads;
+        document.querySelector('.card:nth-child(2) .stat').textContent = data.high_priority;
+        document.querySelector('.card:nth-child(3) .stat').textContent = data.emails_sent;
+        document.querySelector('.card:nth-child(4) .stat').textContent = data.replies_received;
+      } catch (error) {
+        console.warn('Unable to refresh stats', error);
+      }
+    }
+    setInterval(refreshStats, 30000);
+    {% endif %}
+
+    {% if page == 'scan' %}
+    async function runScan() {
+      const url = document.getElementById('scan-url').value.trim();
+      if (!url) return false;
+      const resultCard = document.getElementById('scan-result');
+      resultCard.style.display = 'block';
+      resultCard.innerHTML = '<p>Running scan...</p>';
+      try {
+        const response = await fetch('/api/scan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url }),
+        });
+        const json = await response.json();
+        if (response.ok) {
+          resultCard.innerHTML = `<h2>Scan Results</h2><pre>${JSON.stringify(json, null, 2)}</pre>`;
+        } else {
+          resultCard.innerHTML = `<p class="text-muted">${json.error || 'Scan failed.'}</p>`;
+        }
+      } catch (error) {
+        resultCard.innerHTML = `<p class="text-muted">${error.message}</p>`;
+      }
+      return false;
+    }
+    {% endif %}
+  </script>
+</body>
+</html>

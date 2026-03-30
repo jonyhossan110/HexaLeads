@@ -1,3 +1,26 @@
 {
-  "TELEGRAM_BOT_TOKEN": "8751667209:AAE6FFfkZ8tDoROtdyiqGUCMJ3g3-FRyjk0"
+  "app_name": "HexaLeads",
+  "version": "2.0.0",
+  "owner": "Md. Jony Hassain | HexaCyberLab",
+  "dashboard_port": 5555,
+  "database_path": "leads.db",
+  "log_path": "logs/hexaleads.log",
+  "max_emails_per_day": 50,
+  "scan_timeout": 10,
+  "search_delay_seconds": 2,
+  "max_leads_per_run": 100,
+  "follow_up_days": 4,
+  "max_follow_ups": 2,
+  "target_countries": ["US", "UK", "CA", "AU", "DE", "NL", "SG", "AE"],
+  "search_keywords": [
+    "dental clinic", "law firm", "real estate agency",
+    "restaurant", "hotel", "e-commerce store",
+    "startup", "marketing agency", "accounting firm"
+  ],
+  "services": {
+    "pentest": "$50-$699",
+    "web_dev": "$200-$2000",
+    "malware_removal": "$100-$500",
+    "security_audit": "$50-$299"
+  }
 }
